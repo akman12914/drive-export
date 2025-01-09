@@ -1,4 +1,4 @@
-const { app, BrowserWindow, clipboard, Tray, Menu } = require("electron");
+const { app, BrowserWindow, ipcMain, clipboard, Tray, Menu } = require("electron");
 const path = require("path");
 
 let mainWindow;
@@ -9,41 +9,45 @@ function createWindow() {
     width: 400,
     height: 200,
     webPreferences: {
-      nodeIntegration: true, // Node.js API를 렌더러 프로세스에서 사용할 수 있게 설정
+      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: false, // nodeIntegration을 비활성화 (보안 문제 방지)
+      contextIsolation: true, // contextIsolation을 활성화 (보안 문제 방지)
     },
   });
 
   mainWindow.loadFile("index.html");
 }
 
+ipcMain.handle("get-clipboard-text", () => {
+  console.log("gg");
+  const clipboardText = clipboard.readText();
+  console.log(clipboardText);
+  console.log(clipboard);
+  console.log("클립보드 내용:", clipboardText);
+
+  const modifiedText = convertGoogleDriveUrl(clipboardText);
+  clipboard.writeText(modifiedText); // 클립보드에 텍스트 쓰기
+  console.log("클립보드에 텍스트를 썼습니다:", modifiedText); // 텍스트가 잘 들어갔는지 확인
+  return modifiedText;
+});
+
+function convertGoogleDriveUrl(originalUrl) {
+  // 정규식으로 파일 ID 추출 ("/d/"와 "/view" 사이의 문자열)
+  const regex = /\/d\/([a-zA-Z0-9_-]+)/;
+  const match = originalUrl.match(regex);
+
+  if (match && match[1]) {
+    const fileId = match[1];
+    // 새로운 형식의 URL로 반환
+    return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  } else {
+    // ID를 추출할 수 없는 경우
+    return "error";
+  }
+}
+
 app.whenReady().then(() => {
   createWindow();
-
-  // 바탕화면 아이콘 클릭 시 앱 열기
-  tray = new Tray(path.join(__dirname, "icon.png")); // 아이콘 파일 경로
-
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: "Change Clipboard Text",
-      click: () => {
-        clipboard.writeText("새로운 클립보드 텍스트!"); // 클립보드 내용 바꾸기
-      },
-    },
-    {
-      label: "Exit",
-      click: () => {
-        app.quit(); // 앱 종료
-      },
-    },
-  ]);
-  tray.setToolTip("클립보드 텍스트 바꾸기");
-  tray.setContextMenu(contextMenu);
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
 });
 
 app.on("window-all-closed", () => {
