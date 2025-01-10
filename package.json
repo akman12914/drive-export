@@ -4,12 +4,20 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.example.drive-export",
+    "win": {
+      "icon": "path/to/favicon.png"
+    }
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "electron": "^33.3.1"
+    "electron": "^33.3.1",
+    "electron-builder": "^25.1.8"
   }
 }

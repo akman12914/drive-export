@@ -13,6 +13,7 @@ function createWindow() {
       nodeIntegration: false, // nodeIntegration을 비활성화 (보안 문제 방지)
       contextIsolation: true, // contextIsolation을 활성화 (보안 문제 방지)
     },
+    icon: path.join(__dirname, "favicon.png"), // 파비콘 경로 설정
   });
 
   mainWindow.loadFile("index.html");
