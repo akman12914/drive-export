@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Clipboard Editor</title>
     <link rel="icon" href="/icon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>클립보드 : <span id="clipboard-text">불러오는 중..</span></h1>
-    <button id="loadClipboard">클립보드 내용 불러오기</button>
+    <div class="card">
+      <h1>클립보드 : <span id="clipboard-text">불러오는 중..</span></h1>
+      <button id="loadClipboard">클립보드 내용 불러오기</button>
+    </div>
 
     <script>
       document.getElementById("loadClipboard").addEventListener("click", async () => {
